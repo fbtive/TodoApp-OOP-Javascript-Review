@@ -37,6 +37,21 @@ UI.prototype.createColumnElement = function(type, text) {
     return column
 }
 
+UI.prototype.showAlert = function(message, className) {
+    const div = document.createElement('div');
+    div.className = 'alert '+ className;
+    div.appendChild(document.createTextNode(message));
+
+    const form = document.querySelector('#book-form');
+
+    const container = document.querySelector('.container');
+    container.insertBefore(div, form);
+
+    setTimeout(function() {
+        document.querySelector('.alert').remove();
+    }, 3000)
+}
+
 UI.prototype.clearField = function() {
     const title = document.getElementById('title').value = '';
     const author = document.getElementById('author').value = '';
@@ -49,11 +64,16 @@ document.getElementById('book-form').addEventListener('submit', function(e) {
         author = document.getElementById('author').value,
         isbn = document.getElementById('isbn').value;
 
-    const book = new Book(title, author, isbn);
-
     const ui = new UI();
-    ui.addBookToList(book);
-    ui.clearField();
+    if(title == '' || author == '' || isbn == ''){
+        ui.showAlert('All fields should not be empty.', 'error');
+    }else {
+        const book = new Book(title, author, isbn);
+
+        ui.addBookToList(book);
+        ui.showAlert('Book added', 'success')
+        ui.clearField();
+    }
 
     e.preventDefault();
 })
